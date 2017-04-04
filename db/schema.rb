@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170305125701) do
+ActiveRecord::Schema.define(version: 20170403073437) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -20,6 +20,14 @@ ActiveRecord::Schema.define(version: 20170305125701) do
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
     t.index ["city"], name: "index_cities_on_city", using: :btree
+  end
+
+  create_table "places", force: :cascade do |t|
+    t.string   "origin"
+    t.string   "destination"
+    t.integer  "distance"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
 end

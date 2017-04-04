@@ -1,8 +1,182 @@
-<h1>Home</h1>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Distance Matrix service</title>
+    <style>
+      #right-panel {
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
 
-<p>maps app @test</p>
+      #right-panel select, #right-panel input {
+        font-size: 15px;
+      }
 
-Input city:
+      #right-panel select {
+        width: 100%;
+      }
 
-<input type="text" name="city">
+      #right-panel i {
+        font-size: 12px;
+      }
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+        width: 50%;
+      }
+      #right-panel {
+        float: right;
+        width: 48%;
+        padding-left: 2%;
+      }
+      #output {
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="right-panel">
+      <div id="inputs">
+        <pre>
+        </pre>
+      </div>
+      <div>
+        <strong>Results</strong>
+      </div>
+      <div id="output"></div>
+    </div>
+    <div id="map"></div>
+    <button id="save" onclick="save()">WYSLIJ DO RAILS</button>
+    <script>
+      function initMap() {
+        var bounds = new google.maps.LatLngBounds;
+        var markersArray = [];
 
+        var inputData = ['Rzeszow', 'Krakow', 'Sanok', 'Krosno', 'Jaslo'];
+        // start place
+
+
+        var destinationIcon = 'https://chart.googleapis.com/chart?' +
+            'chst=d_map_pin_letter&chld=D|FF0000|000000';
+        var originIcon = 'https://chart.googleapis.com/chart?' +
+            'chst=d_map_pin_letter&chld=O|FFFF00|000000';
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 55.53, lng: 9.4},
+          zoom: 10
+        });
+        var geocoder = new google.maps.Geocoder;
+
+// create MY TABLE [m]
+            var myTable = [];
+
+        for (var a = 0; a < 5; a++) {
+          
+        
+        // configuration service
+        var service = new google.maps.DistanceMatrixService;
+        service.getDistanceMatrix({
+          origins: [inputData[a]],
+          destinations: inputData,
+
+          travelMode: 'DRIVING',
+          unitSystem: google.maps.UnitSystem.METRIC,
+          avoidHighways: false,
+          avoidTolls: false
+        }, function(response, status) {
+          if (status !== 'OK') {
+            alert('Error was: ' + status);
+          } else {
+
+            var originList = response.originAddresses;
+            var destinationList = response.destinationAddresses;
+
+            var outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = '';
+            deleteMarkers(markersArray);
+
+            var showGeocodedAddressOnMap = function(asDestination) {
+              var icon = asDestination ? destinationIcon : originIcon;
+              return function(results, status) {
+                if (status === 'OK') {
+                  map.fitBounds(bounds.extend(results[0].geometry.location));
+                  markersArray.push(new google.maps.Marker({
+                    map: map,
+                    position: results[0].geometry.location,
+                    icon: icon
+                  }));
+                } else {
+                  alert('Geocode was not successful due to: ' + status);
+                }
+              };
+            };
+
+            
+            for (var i = 0; i < originList.length; i++) {
+              var results = response.rows[i].elements;
+              geocoder.geocode({'address': originList[i]},
+                  showGeocodedAddressOnMap(false));
+              for (var j = 0; j < results.length; j++) {
+
+                // add data in meters [m] to table
+                myTable.push(results[j].distance.value);
+
+                geocoder.geocode({'address': destinationList[j]},
+                    showGeocodedAddressOnMap(true));
+                outputDiv.innerHTML += originList[i] + ' to ' + destinationList[j] +
+                    ': ' + results[j].distance.text + ' in ' +
+                    results[j].duration.text + '<br>';
+              }
+            }
+
+
+            console.log('my table', myTable);
+          }
+        });
+      }
+    }
+
+
+      function deleteMarkers(markersArray) {
+        for (var i = 0; i < markersArray.length; i++) {
+          markersArray[i].setMap(null);
+        }
+        markersArray = [];
+      }
+
+      function save() {
+        console.log('dziala');
+
+        $.ajax({
+        url : "/places",
+        type : "post",
+        data: {
+        {
+          'origin': 'Sanok',
+          'destination': 'Rzeszow',
+          'distance': '80000'
+        }, 
+        {
+          'origin': 'Sanok',
+          'destination': 'Krakow',
+          'distance': '200000'
+        }, 
+        {
+          'origin': 'Krakow',
+          'destination': 'Rzeszow',
+          'distance': '160000'}
+        };
+
+    });
+    }
+    
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRADgzIj5M-Awl8FYA_ngHjpHcWbfyzZ0&callback=initMap">
+    </script>
+  </body>
+</html>
