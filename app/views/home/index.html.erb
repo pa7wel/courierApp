@@ -37,6 +37,13 @@
       #output {
         font-size: 11px;
       }
+      .button {
+        width: 150px;
+        height: 30px;
+        background: lightblue;
+        margin: 10px;
+        border: 1px solid black;
+      }
     </style>
   </head>
   <body>
@@ -51,15 +58,14 @@
       <div id="output"></div>
     </div>
     <div id="map"></div>
-    <button id="save" onclick="save()">WYSLIJ DO RAILS</button>
+    <div class="button"><%= link_to("GA", {:controller => 'genetic_algorithm'})%></div>
+    <button id="save" onclick="save()" class="button">WYSLIJ DO RAILS</button>
     <script>
       function initMap() {
         var bounds = new google.maps.LatLngBounds;
         var markersArray = [];
 
         var inputData = ['Rzeszow', 'Krakow', 'Sanok', 'Krosno', 'Jaslo'];
-        // start place
-
 
         var destinationIcon = 'https://chart.googleapis.com/chart?' +
             'chst=d_map_pin_letter&chld=D|FF0000|000000';
@@ -114,8 +120,7 @@
                 }
               };
             };
-
-            
+      
             for (var i = 0; i < originList.length; i++) {
               var results = response.rows[i].elements;
               geocoder.geocode({'address': originList[i]},
@@ -132,8 +137,6 @@
                     results[j].duration.text + '<br>';
               }
             }
-
-
             console.log('my table', myTable);
           }
         });
@@ -155,28 +158,16 @@
         url : "/places",
         type : "post",
         data: {
-        {
-          'origin': 'Sanok',
-          'destination': 'Rzeszow',
-          'distance': '80000'
-        }, 
-        {
-          'origin': 'Sanok',
-          'destination': 'Krakow',
-          'distance': '200000'
-        }, 
-        {
-          'origin': 'Krakow',
-          'destination': 'Rzeszow',
-          'distance': '160000'}
-        };
-
-    });
+            'origin': 'Sanok',
+            'destination': 'Krakow',
+            'distance': '1000'
+        }
+        });
     }
-    
+
     </script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRADgzIj5M-Awl8FYA_ngHjpHcWbfyzZ0&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9wkOyJCMaTsNCqGFXIw1n6x5IrfunBIE&callback=initMap">
     </script>
   </body>
 </html>

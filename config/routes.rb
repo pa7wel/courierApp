@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  get 'genetic_algorithm/index'
+
   resources :places
   get 'home/index'
 

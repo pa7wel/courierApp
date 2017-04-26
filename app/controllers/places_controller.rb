@@ -25,9 +25,9 @@ class PlacesController < ApplicationController
   # POST /places.json
   def create
 
-    place_params[:data].each do |data| 
-      @place = Place.new(data)
-    end
+    #place_params[:data].each do |data| 
+     # @place = Place.new(data)
+   # end
 
 
     @place = Place.new(place_params)
