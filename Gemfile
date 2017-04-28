@@ -5,7 +5,6 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.0.2'
 # Use postgresql as the database for Active Record
@@ -38,7 +37,13 @@ gem 'pry', '~> 0.10.4'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
-gem 'google_distance_matrix'
+gem 'sidekiq'
+
+gem 'redis-rails'
+
+#gem 'sinatra', github: 'sinatra/sinatra'
+
+gem 'rack-protection', '~> 1.5', '>= 1.5.3'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

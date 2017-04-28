@@ -2,55 +2,14 @@
 <html>
   <head>
     <title>Distance Matrix service</title>
-    <style>
-      #right-panel {
-        font-family: 'Roboto','sans-serif';
-        line-height: 30px;
-        padding-left: 10px;
-      }
 
-      #right-panel select, #right-panel input {
-        font-size: 15px;
-      }
-
-      #right-panel select {
-        width: 100%;
-      }
-
-      #right-panel i {
-        font-size: 12px;
-      }
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-      #map {
-        height: 100%;
-        width: 50%;
-      }
-      #right-panel {
-        float: right;
-        width: 48%;
-        padding-left: 2%;
-      }
-      #output {
-        font-size: 11px;
-      }
-      .button {
-        width: 150px;
-        height: 30px;
-        background: lightblue;
-        margin: 10px;
-        border: 1px solid black;
-      }
-    </style>
   </head>
   <body>
+    <p><%= @test %></p>
+    
+    <button class="sentToSidekiq" onclick="sentToSidekiq()">SENT TO SAVE</button>
     <div id="right-panel">
       <div id="inputs">
-        <pre>
-        </pre>
       </div>
       <div>
         <strong>Results</strong>
@@ -58,14 +17,13 @@
       <div id="output"></div>
     </div>
     <div id="map"></div>
-    <div class="button"><%= link_to("GA", {:controller => 'genetic_algorithm'})%></div>
-    <button id="save" onclick="save()" class="button">WYSLIJ DO RAILS</button>
     <script>
       function initMap() {
+            
         var bounds = new google.maps.LatLngBounds;
         var markersArray = [];
 
-        var inputData = ['Rzeszow', 'Krakow', 'Sanok', 'Krosno', 'Jaslo'];
+        var originTable = ['Sanok','Krakow','Rzeszow','Krosno','Jaslo'];
 
         var destinationIcon = 'https://chart.googleapis.com/chart?' +
             'chst=d_map_pin_letter&chld=D|FF0000|000000';
@@ -77,18 +35,10 @@
         });
         var geocoder = new google.maps.Geocoder;
 
-// create MY TABLE [m]
-            var myTable = [];
-
-        for (var a = 0; a < 5; a++) {
-          
-        
-        // configuration service
         var service = new google.maps.DistanceMatrixService;
         service.getDistanceMatrix({
-          origins: [inputData[a]],
-          destinations: inputData,
-
+          origins: originTable,
+          destinations: originTable,
           travelMode: 'DRIVING',
           unitSystem: google.maps.UnitSystem.METRIC,
           avoidHighways: false,
@@ -97,13 +47,16 @@
           if (status !== 'OK') {
             alert('Error was: ' + status);
           } else {
-
             var originList = response.originAddresses;
+            console.log('originList', originList);
+            console.log('response: ', response);
             var destinationList = response.destinationAddresses;
-
             var outputDiv = document.getElementById('output');
             outputDiv.innerHTML = '';
             deleteMarkers(markersArray);
+
+            // parsowanie JSON do wysylki do sidekiq
+
 
             var showGeocodedAddressOnMap = function(asDestination) {
               var icon = asDestination ? destinationIcon : originIcon;
@@ -120,16 +73,12 @@
                 }
               };
             };
-      
+
             for (var i = 0; i < originList.length; i++) {
               var results = response.rows[i].elements;
               geocoder.geocode({'address': originList[i]},
                   showGeocodedAddressOnMap(false));
               for (var j = 0; j < results.length; j++) {
-
-                // add data in meters [m] to table
-                myTable.push(results[j].distance.value);
-
                 geocoder.geocode({'address': destinationList[j]},
                     showGeocodedAddressOnMap(true));
                 outputDiv.innerHTML += originList[i] + ' to ' + destinationList[j] +
@@ -137,12 +86,9 @@
                     results[j].duration.text + '<br>';
               }
             }
-            console.log('my table', myTable);
           }
         });
       }
-    }
-
 
       function deleteMarkers(markersArray) {
         for (var i = 0; i < markersArray.length; i++) {
@@ -151,23 +97,179 @@
         markersArray = [];
       }
 
-      function save() {
-        console.log('dziala');
+      function sentToSidekiq() {
+        var dataJSON = {
+              cities: ['Sanok', 'Krakow', 'Rzeszow','Krosno', 'Jaslo'],
+              distances: [{
+                origin: "Sanok",
+                destination: "Sanok",
+                distance: 0
+              },
+              {
+                origin: "Sanok",
+                destination: "Krakow",
+                distance: 170
+              },
+              {
+                origin: "Sanok",
+                destination: "Rzeszow",
+                distance: 80
+              },
+              {
+                origin: "Sanok",
+                destination: "Krosno",
+                distance: 30
+              },
+              {
+                origin: "Sanok",
+                destination: "Jaslo",
+                distance: 50
+              },
+              {
+                origin: "Krakow",
+                destination: "Sanok",
+                distance: 170
+              },
+              {
+                origin: "Krakow",
+                destination: "Krakow",
+                distance: 0
+              },
+              {
+                origin: "Krakow",
+                destination: "Rzeszow",
+                distance: 160
+              },
+              {
+                origin: "Krakow",
+                destination: "Krosno",
+                distance: 140
+              },
+              {
+                origin: "Krakow",
+                destination: "Jaslo",
+                distance: 120
+              },
+              {
+                origin: "Rzeszow",
+                destination: "Sanok",
+                distance: 80
+              },
+              {
+                origin: "Rzeszow",
+                destination: "Krakow",
+                distance: 160
+              },
+              {
+                origin: "Rzeszow",
+                destination: "Rzeszow",
+                distance: 0
+              },
+              {
+                origin: "Rzeszow",
+                destination: "Krosno",
+                distance: 60
+              },
+              {
+                origin: "Rzeszow",
+                destination: "Jaslo",
+                distance: 70
+              },
+              {
+                origin: "Krosno",
+                destination: "Sanok",
+                distance: 50
+              },
+              {
+                origin: "Krosno",
+                destination: "Krakow",
+                distance: 140
+              },
+              {
+                origin: "Krosno",
+                destination: "Rzeszow",
+                distance: 60
+              },
+              {
+                origin: "Krosno",
+                destination: "Krosno",
+                distance: 0
+              },
+              {
+                origin: "Krosno",
+                destination: "Jaslo",
+                distance: 20
+              },
+              {
+                origin: "Jaslo",
+                destination: "Sanok",
+                distance: 50
+              },
+              {
+                origin: "Jaslo",
+                destination: "Krakow",
+                distance: 120
+              },
+              {
+                origin: "Jaslo",
+                destination: "Rzeszow",
+                distance: 70
+              },
+              {
+                origin: "Jaslo",
+                destination: "Krosno",
+                distance: 20
+              },
+              {
+                origin: "Jaslo",
+                destination: "Jaslo",
+                distance: 0
+              },
+             ]
+            };
 
-        $.ajax({
-        url : "/places",
-        type : "post",
-        data: {
-            'origin': 'Sanok',
-            'destination': 'Krakow',
-            'distance': '1000'
-        }
-        });
+
+    console.log('test json to sent:', dataJSON);
+
+    function output(msg) { console.log(msg) }
+    function jobFinished(jobResult) {
+      console.log(jobResult);
     }
 
+    function pollJob(jobId, successCallback) {
+      function poll() {
+        var pollEvery = 1000; // milliseconds
+        $.ajax({
+          type: "GET",
+          url: "/home/fetch/" + jobId, // coupled to your app's routes
+          dataType: 'text',
+          statusCode: {
+            200: function(data) { successCallback(data); },
+            202: function(data) { setTimeout(poll, pollEvery); },
+            500: function(data) { output('Error!'); }
+          }
+        });
+      };
+      poll();
+    }
+
+    output('Creating...');
+
+    $.ajax({
+      type: "POST",
+      url: "/home/create",
+      data: dataJSON,
+      dataType: 'json',
+      success: function(data) {
+        output('Job queued, waiting...');
+        pollJob(data.jobId, jobFinished);
+      }
+    });
+
+      }
     </script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9wkOyJCMaTsNCqGFXIw1n6x5IrfunBIE&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnOy5ShOWWkeOp26Ez_fz5K4yM6Zr5Br8&callback=initMap">
     </script>
   </body>
 </html>

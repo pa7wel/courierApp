@@ -1,19 +1,15 @@
-class GeneticAlgorithmController < ApplicationController
-   #before_action :start
-#require 'socket'
-#Socket.getaddrinfo("127.0.0.1", "65536")
+class HardWorker
+  include Sidekiq::Worker
+  #include Sidekiq::Status::Worker
+  sidekiq_options retry: false
 
-  def index
-  	#HardWorker.perform_async()
-  	#render text: "request to worker "
-  	
+  def perform(params) 
+    #start 
+    puts "jestem sidekick hello o"
+    puts "#{params}"
+
   end
 
-#require './city'
-#require './tour'
-#require './tour_manager'
-#require './population'
-#require './ga'
 def start
 
 city = City.new("Sanok");  
@@ -46,6 +42,7 @@ end
 #puts population.fittest.to_s
 @final_dist = population.fittest.distance;
 @solution = population.fittest.to_s
+render text: "distance: #{@final_dist} and solution: #{@solution}"
 end
 
 # other ...
@@ -379,6 +376,5 @@ class GA
   end
 end
 
-
-
 end
+

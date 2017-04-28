@@ -1,5 +1,5 @@
 class PlacesController < ApplicationController
-  before_action :set_place, only: [:show, :edit, :update, :destroy]
+  #before_action :set_place, only: [:show, :edit, :update, :destroy]
 
   # GET /places
   # GET /places.json
@@ -24,22 +24,33 @@ class PlacesController < ApplicationController
   # POST /places
   # POST /places.json
   def create
-
     #place_params[:data].each do |data| 
      # @place = Place.new(data)
    # end
+   
+   @job_id = HardWorker.perform_async(place_params)
 
+   # @place = Place.new(place_params)
 
-    @place = Place.new(place_params)
+   # respond_to do |format|
+    #  if @place.save
+    #    format.html { redirect_to @place, notice: 'Place was successfully created.' }
+    #    format.json { render :show, status: :created, location: @place }
+    #  else
+    #    format.html { render :new }
+     #   format.json { render json: @place.errors, status: :unprocessable_entity }
+     # end
+    #end
+  end
 
-    respond_to do |format|
-      if @place.save
-        format.html { redirect_to @place, notice: 'Place was successfully created.' }
-        format.json { render :show, status: :created, location: @place }
-      else
-        format.html { render :new }
-        format.json { render json: @place.errors, status: :unprocessable_entity }
-      end
+  def fetch
+    job_id = params[:job_id]
+    if Sidekiq::Status::complete? job_id
+      render :status => 200, :text => Sidekiq::Status::get(job_id, :output)
+    elsif Sidekiq::Status::failed? job_id
+      render :status => 500, :text => 'Failed'
+    else
+      render :status => 202, :text => ''
     end
   end
 
@@ -75,6 +86,6 @@ class PlacesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def place_params
-      params.permit(:origin, :destination, :distance, :places)
+      params.permit(:dataJSON)
     end
 end
