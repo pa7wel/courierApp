@@ -6,9 +6,9 @@
 	end
 
   def create
-    
-    @job_id = HardWorker.perform_async(my_params)
-    
+    dane = my_params
+    @job_id = HardWorker.perform_async(my_params.to_json)
+
     render :status => :accepted, :json => { jobId: @job_id }
   end
   
@@ -23,9 +23,10 @@
     end
   end
   
-  
+  protected
     def my_params
-      params.permit(:dataJSON)
+      params.permit(:cities => [], :distances => [:origin, :destination, :distance])
     end
+
 
 end

@@ -66,6 +66,7 @@ GEM
       rails-dom-testing (>= 1, < 3)
       railties (>= 4.2.0)
       thor (>= 0.14, < 2.0)
+    json (2.1.0)
     listen (3.0.8)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
@@ -83,6 +84,9 @@ GEM
     nio4r (2.0.0)
     nokogiri (1.7.0.1)
       mini_portile2 (~> 2.1.0)
+    parse (0.1.0)
+      activesupport
+      safe_yaml (>= 1)
     pg (0.19.0)
     pry (0.10.4)
       coderay (~> 1.1.0)
@@ -138,6 +142,7 @@ GEM
       redis-store (>= 1.2, < 2)
     redis-store (1.3.0)
       redis (>= 2.2)
+    safe_yaml (1.0.4)
     sass (3.4.23)
     sass-rails (5.0.6)
       railties (>= 4.0.0, < 6)
@@ -150,6 +155,8 @@ GEM
       connection_pool (~> 2.2, >= 2.2.0)
       rack-protection (>= 1.5.0)
       redis (~> 3.3, >= 3.3.3)
+    sidekiq-status (0.6.0)
+      sidekiq (>= 2.7)
     slop (3.6.0)
     spring (2.0.1)
       activesupport (>= 4.2)
@@ -191,7 +198,9 @@ DEPENDENCIES
   georuby
   jbuilder (~> 2.5)
   jquery-rails
+  json (~> 2.1)
   listen (~> 3.0.5)
+  parse (~> 0.1.0)
   pg (~> 0.18)
   pry (~> 0.10.4)
   puma (~> 3.0)
@@ -200,6 +209,7 @@ DEPENDENCIES
   redis-rails
   sass-rails (~> 5.0)
   sidekiq
+  sidekiq-status (~> 0.6.0)
   spring
   spring-watcher-listen (~> 2.0.0)
   turbolinks (~> 5)

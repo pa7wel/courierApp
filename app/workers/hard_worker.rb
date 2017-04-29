@@ -1,79 +1,67 @@
 class HardWorker
   include Sidekiq::Worker
-  #include Sidekiq::Status::Worker
+  include Sidekiq::Status::Worker
   sidekiq_options retry: false
 
   def perform(params) 
-    #start 
-    puts "jestem sidekick hello o"
-    puts "#{params}"
+    puts "------------------GA run ...... ----------------------"
+ 
+    $response = ActiveSupport::JSON.decode(params)
 
+    #av = ActionView::Base.new(Rails.root.join('app', 'views'))
+    #av.assign({:outpout => @output})
+    #store :output, av.render(:template => "home/index.html")
+    $response['cities'].each do |i| 
+      city = City.new(i);
+      TourManager.add_city(city);
+    end
+
+    # Initialize population
+    population = Population.new(100, true)		# utworzenie populacji skladajacej sie z 100 tras
+    #puts "Initial distance: #{population.fittest.distance}"  # wyswietlenie najkrotszej trasy na podst. fitness 
+    @initial_dist = population.fittest.distance
+    puts "Initial distance: #{@initial_dist}"
+
+    # Evolve population
+    population = GA.evolve_population( population )
+    population = GA.evolve_population( population )
+    100.times do
+      population = GA.evolve_population( population )
+      puts "Final distance: #{population.fittest.distance}"
+    end
+
+    puts "Finished"
+    #puts "Final distance: #{population.fittest.distance}"
+    #puts "Solution:"
+    #puts population.fittest.to_s
+    @final_dist = population.fittest.distance;
+    puts "Final distance: #{@final_dist}"
+    @solution = population.fittest.to_s
+    puts "Final distance: #{@solution}"
   end
 
-def start
+# CLASSES ---------------------------------------------------------n
 
-city = City.new("Sanok");  
-TourManager.add_city(city);
-city = City.new("Krakow");  
-TourManager.add_city(city);
-city = City.new("Rzeszow");  
-TourManager.add_city(city);
-city = City.new("Krosno");  
-TourManager.add_city(city);
-city = City.new("Jaslo");  
-TourManager.add_city(city);
-
-
-# Initialize population
-population = Population.new(100, true)		# utworzenie populacji skladajacej sie z 100 tras
-#puts "Initial distance: #{population.fittest.distance}"  # wyswietlenie najkrotszej trasy na podst. fitness 
-@initial_dist = population.fittest.distance
-
-# Evolve population
-population = GA.evolve_population( population )
-population = GA.evolve_population( population )
-100.times do
-  population = GA.evolve_population( population )
-end
-
-#puts "Finished"
-#puts "Final distance: #{population.fittest.distance}"
-#puts "Solution:"
-#puts population.fittest.to_s
-@final_dist = population.fittest.distance;
-@solution = population.fittest.to_s
-render text: "distance: #{@final_dist} and solution: #{@solution}"
-end
-
-# other ...
 class City
-  #attr_accessor :x
-  #attr_accessor :y
   attr_accessor :name
 
   def initialize( name = nil)
-    #self.x = x
-    #self.y = y
     self.name = name
   end
 
   def distance_to( city )
-    #x_distance = (self.x - city.x).abs
-    #y_distance = ( self.y - city.y).abs
-    #Math.sqrt( x_distance.abs2 + y_distance.abs2 )
-    
-    #result = Place.select(:distance).find_by origin: name, destination: city.name
-    #result.distance
-    Integer(rand * 500)
-
+    @miasta = $response['distances'].values
+    @distance = @miasta.find {|x| x['origin'] == name  and x['destination'] == city.name}['distance']
+    #@distance
+    #@distance = rand(500)
+    #puts "miasto: #{city.name} do #{name} | dystans : #{@distance}"
+    @distance.to_i   
   end
 
   def to_s
     "#{self.name}"
   end
 end
-
-# class TOUR MANAGER 
 
 class TourManager
   def self.destination_cities
@@ -98,8 +86,7 @@ class TourManager
     end
   end
 end
-
-# class 
+ 
 class Tour
   def initialize( tour = nil )
     if tour
@@ -115,10 +102,7 @@ class Tour
     TourManager.each_city do |city|
       tour << city
     end
-    # randomly reorder the tour
     shuffle_tour!
-
-
   end
 
   def set_at_first_available( city )
@@ -134,7 +118,6 @@ class Tour
 
   def set_city( tour_position, city )
     tour[tour_position] = city
-
     # reset cached fitness and distance
     @fitness = @distance = 0
   end
@@ -154,16 +137,12 @@ class Tour
         if index + 1 < size
           destination_city = get_city(index+1)
         else
-          # If it is the last city in the turn, set
-          # the first city as the destination
           destination_city = get_city(0)
         end
-
         tour_distance += from_city.distance_to(destination_city)
       end
       @distance = tour_distance
     end
-
     @distance
   end
 
@@ -208,7 +187,6 @@ class Tour
   end
 end
 
-# class 
 
 class Population
   attr_accessor :size
@@ -249,7 +227,6 @@ class Population
       end
     end
 
-
   end
 
   def tours
@@ -260,8 +237,6 @@ class Population
     @tours = []
   end
 end
-
-#class
 
 class GA
   def self.mutation_rate
@@ -375,6 +350,7 @@ class GA
     tournament.fittest
   end
 end
-
 end
+
+
 

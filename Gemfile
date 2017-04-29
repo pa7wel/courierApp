@@ -32,6 +32,8 @@ gem 'jbuilder', '~> 2.5'
 # gem 'bcrypt', '~> 3.1.7'
 gem 'georuby'
 
+gem 'parse', '~> 0.1.0'
+
 gem 'pry', '~> 0.10.4'
 
 # Use Capistrano for deployment
@@ -39,7 +41,11 @@ gem 'pry', '~> 0.10.4'
 
 gem 'sidekiq'
 
+gem 'sidekiq-status', '~> 0.6.0'
+
 gem 'redis-rails'
+
+gem 'json', '~> 2.1'
 
 #gem 'sinatra', github: 'sinatra/sinatra'
 

@@ -27,9 +27,7 @@ class PlacesController < ApplicationController
     #place_params[:data].each do |data| 
      # @place = Place.new(data)
    # end
-   
-   @job_id = HardWorker.perform_async(place_params)
-
+  
    # @place = Place.new(place_params)
 
    # respond_to do |format|
