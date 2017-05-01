@@ -1,25 +1,26 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Distance Matrix service</title>
-
+    <title>home page</title>
   </head>
   <body>
-    <p><%= @test %></p>
-    
     <button class="sentToSidekiq" onclick="sentToSidekiq()">SENT TO SAVE</button>
 
     <div id="right-panel">
       <div id="inputs">
-      </div>
-      <div>
+    </div>
+    <div>
         <strong>Results</strong>
-      </div>
-      <div id="output"></div>
+    </div>
+    <div id="output"></div>
     </div>
     <div id="map"></div>
     <script>
       function initMap() {
+        var parseJSON = {
+              cities: [],
+              distances: []
+            }
             
         var bounds = new google.maps.LatLngBounds;
         var markersArray = [];
@@ -57,6 +58,28 @@
             deleteMarkers(markersArray);
 
             // parsowanie JSON do wysylki do sidekiq
+            console.log(response);
+            parseJSON.cities = originList;
+
+            var count = 0;
+            for (var i = 0; i < response.destinationAddresses.length; i++) {
+              var results = response.rows[i].elements;
+
+              for (var j = 0; j < response.originAddresses.length; j++) {
+                console.log(count);
+                  parseJSON.distances[count] = {
+                    origin: response.destinationAddresses[i],
+                    destination: response.originAddresses[j],
+                    distance: results[j].distance.value
+                  }
+                  console.log(parseJSON.distances[count].origin);
+                  console.log(parseJSON.distances[count].destination);
+                count++;
+              }
+              
+            }
+
+            console.log('wynikowy json', parseJSON);
 
 
             var showGeocodedAddressOnMap = function(asDestination) {
@@ -98,140 +121,11 @@
         markersArray = [];
       }
 
-      function sentToSidekiq() {
-        var dataJSON = {
-              cities: ['Sanok', 'Krakow', 'Rzeszow','Krosno', 'Jaslo'],
-              distances: [{
-                origin: "Sanok",
-                destination: "Sanok",
-                distance: 0
-              },
-              {
-                origin: "Sanok",
-                destination: "Krakow",
-                distance: 170
-              },
-              {
-                origin: "Sanok",
-                destination: "Rzeszow",
-                distance: 80
-              },
-              {
-                origin: "Sanok",
-                destination: "Krosno",
-                distance: 30
-              },
-              {
-                origin: "Sanok",
-                destination: "Jaslo",
-                distance: 50
-              },
-              {
-                origin: "Krakow",
-                destination: "Sanok",
-                distance: 170
-              },
-              {
-                origin: "Krakow",
-                destination: "Krakow",
-                distance: 0
-              },
-              {
-                origin: "Krakow",
-                destination: "Rzeszow",
-                distance: 160
-              },
-              {
-                origin: "Krakow",
-                destination: "Krosno",
-                distance: 140
-              },
-              {
-                origin: "Krakow",
-                destination: "Jaslo",
-                distance: 120
-              },
-              {
-                origin: "Rzeszow",
-                destination: "Sanok",
-                distance: 80
-              },
-              {
-                origin: "Rzeszow",
-                destination: "Krakow",
-                distance: 160
-              },
-              {
-                origin: "Rzeszow",
-                destination: "Rzeszow",
-                distance: 0
-              },
-              {
-                origin: "Rzeszow",
-                destination: "Krosno",
-                distance: 60
-              },
-              {
-                origin: "Rzeszow",
-                destination: "Jaslo",
-                distance: 70
-              },
-              {
-                origin: "Krosno",
-                destination: "Sanok",
-                distance: 50
-              },
-              {
-                origin: "Krosno",
-                destination: "Krakow",
-                distance: 140
-              },
-              {
-                origin: "Krosno",
-                destination: "Rzeszow",
-                distance: 60
-              },
-              {
-                origin: "Krosno",
-                destination: "Krosno",
-                distance: 0
-              },
-              {
-                origin: "Krosno",
-                destination: "Jaslo",
-                distance: 20
-              },
-              {
-                origin: "Jaslo",
-                destination: "Sanok",
-                distance: 50
-              },
-              {
-                origin: "Jaslo",
-                destination: "Krakow",
-                distance: 120
-              },
-              {
-                origin: "Jaslo",
-                destination: "Rzeszow",
-                distance: 70
-              },
-              {
-                origin: "Jaslo",
-                destination: "Krosno",
-                distance: 20
-              },
-              {
-                origin: "Jaslo",
-                destination: "Jaslo",
-                distance: 0
-              },
-             ]
-            };
-
+  function sentToSidekiq() {
+        
 
     console.log('test json to sent:', dataJSON);
-
+    debugger
     function output(msg) { console.log(msg) }
     function jobFinished(jobResult) {
       console.log(jobResult);

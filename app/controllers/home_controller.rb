@@ -1,7 +1,5 @@
  class HomeController < ApplicationController
 
-
-
  	def index
   		
 	end
@@ -14,7 +12,6 @@
       @data = Sidekiq::Status::get_all @job_id
       puts @data
     end
-
   end
   
   def fetch
@@ -37,6 +34,4 @@
     def my_params_job
       params.permit(:id)
     end
-
-
 end
