@@ -1,27 +1,20 @@
 class HardWorker
   include Sidekiq::Worker
   include Sidekiq::Status::Worker
-  sidekiq_options retry: false
 
-  def perform(params) 
-    puts "------------------GA run ...... ----------------------"
- 
-    $response = ActiveSupport::JSON.decode(params)
+  def perform(params)
 
-    #av = ActionView::Base.new(Rails.root.join('app', 'views'))
-    #av.assign({:outpout => @output})
-    #store :output, av.render(:template => "home/index.html")
-    $response['cities'].each do |i| 
+    $data = ActiveSupport::JSON.decode(params)
+
+    $data['cities'].each do |i| 
       city = City.new(i);
       TourManager.add_city(city);
     end
-
     # Initialize population
-    population = Population.new(100, true)		# utworzenie populacji skladajacej sie z 100 tras
+    population = Population.new(100, true)
     #puts "Initial distance: #{population.fittest.distance}"  # wyswietlenie najkrotszej trasy na podst. fitness 
     @initial_dist = population.fittest.distance
     puts "Initial distance: #{@initial_dist}"
-
     # Evolve population
     population = GA.evolve_population( population )
     population = GA.evolve_population( population )
@@ -30,14 +23,19 @@ class HardWorker
       puts "Final distance: #{population.fittest.distance}"
     end
 
-    puts "Finished"
-    #puts "Final distance: #{population.fittest.distance}"
-    #puts "Solution:"
-    #puts population.fittest.to_s
     @final_dist = population.fittest.distance;
     puts "Final distance: #{@final_dist}"
     @solution = population.fittest.to_s
     puts "Final distance: #{@solution}"
+
+    store initial_dist: @initial_dist
+    initial_dist = retrieve :initial_dist
+
+    store final_dist: @final_dist
+    final_dist = retrieve :final_dist
+
+    store solution: @solution
+    solution = retrieve :solution
   end
 
 # CLASSES ---------------------------------------------------------n
@@ -50,7 +48,7 @@ class City
   end
 
   def distance_to( city )
-    @miasta = $response['distances'].values
+    @miasta = $data['distances'].values
     @distance = @miasta.find {|x| x['origin'] == name  and x['destination'] == city.name}['distance']
     #@distance
     #@distance = rand(500)

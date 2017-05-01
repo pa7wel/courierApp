@@ -1,31 +1,41 @@
  class HomeController < ApplicationController
-  #before_action :set_place, only: [:show, :edit, :update, :destroy]
+
+
 
  	def index
   		
 	end
 
   def create
-    dane = my_params
     @job_id = HardWorker.perform_async(my_params.to_json)
-
     render :status => :accepted, :json => { jobId: @job_id }
+   
+    if Sidekiq::Status::complete? @job_id
+      @data = Sidekiq::Status::get_all @job_id
+      puts @data
+    end
+
   end
   
   def fetch
-    job_id = params[:job_id]
+    job_id = my_params_job['id']
+
     if Sidekiq::Status::complete? job_id
-      render :status => 200, :text => Sidekiq::Status::get(job_id, :output)
+      render :plain => Sidekiq::Status::get(job_id, :solution), :status => 200
     elsif Sidekiq::Status::failed? job_id
-      render :status => 500, :text => 'Failed'
+      render :plain => 'Failed', :status => 500
     else
-      render :status => 202, :text => ''
+      render :plain => '', :status => 202
     end
   end
   
   protected
     def my_params
       params.permit(:cities => [], :distances => [:origin, :destination, :distance])
+    end
+
+    def my_params_job
+      params.permit(:id)
     end
 
 

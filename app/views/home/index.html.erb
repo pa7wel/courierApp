@@ -8,6 +8,7 @@
     <p><%= @test %></p>
     
     <button class="sentToSidekiq" onclick="sentToSidekiq()">SENT TO SAVE</button>
+
     <div id="right-panel">
       <div id="inputs">
       </div>
@@ -238,13 +239,13 @@
 
     function pollJob(jobId, successCallback) {
       function poll() {
-        var pollEvery = 1000; // milliseconds
+        var pollEvery = 3000; // milliseconds
         $.ajax({
           type: "GET",
           url: "/home/fetch/" + jobId, // coupled to your app's routes
           dataType: 'text',
           statusCode: {
-            200: function(data) { console.log("udalo sie !!!"); },
+            200: function(data) { successCallback(data); },
             202: function(data) { setTimeout(poll, pollEvery); },
             500: function(data) { output('Error!'); }
           }
