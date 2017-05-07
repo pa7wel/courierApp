@@ -16,17 +16,16 @@
     </div>
     <div id="map"></div>
     <script>
-      function initMap() {
-        var parseJSON = {
-              cities: [],
-              distances: []
-            }
+      var parseJSON = {
+        cities: [],
+        distances: []
+      }
             
+      function initMap() {
+
         var bounds = new google.maps.LatLngBounds;
         var markersArray = [];
-
-        var originTable = ['Sanok','Krakow','Rzeszow','Krosno','Jaslo'];
-
+        var originTable = ['Sanok','Krakow','Rzeszow','Krosno','Jaslo','Lublin','Zakopane','Pisarowce','Lesko','Niebylec'];
         var destinationIcon = 'https://chart.googleapis.com/chart?' +
             'chst=d_map_pin_letter&chld=D|FF0000|000000';
         var originIcon = 'https://chart.googleapis.com/chart?' +
@@ -36,7 +35,6 @@
           zoom: 10
         });
         var geocoder = new google.maps.Geocoder;
-
         var service = new google.maps.DistanceMatrixService;
         service.getDistanceMatrix({
           origins: originTable,
@@ -56,15 +54,12 @@
             var outputDiv = document.getElementById('output');
             outputDiv.innerHTML = '';
             deleteMarkers(markersArray);
-
             // parsowanie JSON do wysylki do sidekiq
             console.log(response);
             parseJSON.cities = originList;
-
             var count = 0;
             for (var i = 0; i < response.destinationAddresses.length; i++) {
               var results = response.rows[i].elements;
-
               for (var j = 0; j < response.originAddresses.length; j++) {
                 console.log(count);
                   parseJSON.distances[count] = {
@@ -78,10 +73,7 @@
               }
               
             }
-
             console.log('wynikowy json', parseJSON);
-
-
             var showGeocodedAddressOnMap = function(asDestination) {
               var icon = asDestination ? destinationIcon : originIcon;
               return function(results, status) {
@@ -93,11 +85,10 @@
                     icon: icon
                   }));
                 } else {
-                  alert('Geocode was not successful due to: ' + status);
+                  //alert('Geocode was not successful due to: ' + status);
                 }
               };
             };
-
             for (var i = 0; i < originList.length; i++) {
               var results = response.rows[i].elements;
               geocoder.geocode({'address': originList[i]},
@@ -113,24 +104,19 @@
           }
         });
       }
-
       function deleteMarkers(markersArray) {
         for (var i = 0; i < markersArray.length; i++) {
           markersArray[i].setMap(null);
         }
         markersArray = [];
       }
-
   function sentToSidekiq() {
         
-
-    console.log('test json to sent:', dataJSON);
-    debugger
+    console.log('json to sent to sidekiq:', parseJSON);
     function output(msg) { console.log(msg) }
     function jobFinished(jobResult) {
       console.log(jobResult);
     }
-
     function pollJob(jobId, successCallback) {
       function poll() {
         var pollEvery = 3000; // milliseconds
@@ -147,24 +133,22 @@
       };
       poll();
     }
-
     output('Creating...');
-
     $.ajax({
       type: "POST",
       url: "/home/create",
-      data: dataJSON,
+      data: parseJSON,
       dataType: 'json',
       success: function(data) {
         output('Job queued, waiting...');
         pollJob(data.jobId, jobFinished);
       }
     });
-
       }
     </script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnOy5ShOWWkeOp26Ez_fz5K4yM6Zr5Br8&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDviu0iFDidvkkcZ4fLZysw6W8tDuA-Hsg&callback=initMap">
     </script>
   </body>
 </html>
+Contact GitHub API Training Shop Blog About
