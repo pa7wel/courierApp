@@ -4,7 +4,8 @@
     <title>home page</title>
   </head>
   <body>
-    <button class="sentToSidekiq" onclick="sentToSidekiq()">SENT TO SAVE</button>
+    <button class="sentToSidekiq" onclick="sentToSidekiq()">GA</button>
+    <%= link_to("zapisz", {:action => 'createTour'}, :class => 'btn btn-primary')%>
 
     <div id="right-panel">
       <div id="inputs">
@@ -25,7 +26,7 @@
 
         var bounds = new google.maps.LatLngBounds;
         var markersArray = [];
-        var originTable = ['Sanok','Krakow','Rzeszow','Krosno','Jaslo','Lublin','Zakopane','Pisarowce','Lesko','Niebylec'];
+        var originTable = ['Rudna Mała 307','Rzeszów, Kosynierów 25','Rzeszów, Rymanowska 9','Rzeszow, Maczka 6','Rzeszów, Jana Pawła 2 190','Rzeszów, Sosnowa 5','Rzeszów, Rolnicza 1','Rzeszów, Świętego Rocha 9','Rzeszów, Słowackiego 7','Rzeszów, Szafirowa 13'];
         var destinationIcon = 'https://chart.googleapis.com/chart?' +
             'chst=d_map_pin_letter&chld=D|FF0000|000000';
         var originIcon = 'https://chart.googleapis.com/chart?' +

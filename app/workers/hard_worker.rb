@@ -27,6 +27,8 @@ class HardWorker
     puts "Final distance: #{@final_dist}"
     @solution = population.fittest.to_s
     puts "Final distance: #{@solution}"
+    @solution_array = population.fittest.to_table
+    puts "Array solution: #{@solution_array}"
 
     store initial_dist: @initial_dist
     initial_dist = retrieve :initial_dist
@@ -36,6 +38,12 @@ class HardWorker
 
     store solution: @solution
     solution = retrieve :solution
+
+    
+    store solution_array: @solution_array.to_json
+    solution_array = retrieve :solution_array
+
+
   end
 
 # CLASSES ---------------------------------------------------------n
@@ -158,6 +166,14 @@ class Tour
       gene_string << "#{city}|"
     end
     "#{gene_string} => #{distance}"
+  end
+
+  def to_table
+    array_city = []
+    tour.each do |city|
+      array_city << city.name
+    end
+    array_city
   end
 
   def size
