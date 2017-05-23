@@ -1,9 +1,12 @@
 Rails.application.routes.draw do
 
+  devise_for :users
 require 'sidekiq/web'
 mount Sidekiq::Web => "/sidekiq"
 
 get 'genetic_algorithm/index'
+
+root to: 'home#index'
 
 resources :places
 get 'home/index'

@@ -47,6 +47,12 @@ gem 'redis-rails'
 
 gem 'json', '~> 2.1'
 
+gem 'devise'
+
+#gem 'bootstrap', '~> 4.0.0.alpha6'
+
+gem 'bootstrap3-rails', '~> 3.2'
+
 #gem 'sinatra', github: 'sinatra/sinatra'
 
 gem 'rack-protection', '~> 1.5', '>= 1.5.3'
