@@ -32,6 +32,8 @@ gem 'jbuilder', '~> 2.5'
 # gem 'bcrypt', '~> 3.1.7'
 gem 'georuby'
 
+gem 'simple_token_authentication', '~> 1.0' # see semver.org
+
 gem 'parse', '~> 0.1.0'
 
 gem 'pry', '~> 0.10.4'

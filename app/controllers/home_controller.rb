@@ -29,7 +29,7 @@
   end
 
   def createTour(dane)
-    pry.binding
+    
     @dane = Sidekiq::Status::get(@job_id, :solution_array)
     @array_cities = ActiveSupport::JSON.decode(@dane)
     @array_cities.each do |i|

@@ -1,6 +1,13 @@
 Rails.application.routes.draw do
 
-  devise_for :users
+namespace :v1 do
+	resources :routes
+	resources :sessions, only: [:create, :destroy]
+end
+
+
+devise_for :users
+
 require 'sidekiq/web'
 mount Sidekiq::Web => "/sidekiq"
 
