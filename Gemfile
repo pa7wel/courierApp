@@ -55,6 +55,8 @@ gem 'devise'
 
 gem 'bootstrap3-rails', '~> 3.2'
 
+gem 'rack', '~> 2.0', '>= 2.0.2'
+
 #gem 'sinatra', github: 'sinatra/sinatra'
 
 gem 'rack-protection', '~> 1.5', '>= 1.5.3'
