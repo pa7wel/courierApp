@@ -94,7 +94,7 @@ GEM
       method_source (~> 0.8.1)
       slop (~> 3.4)
     puma (3.7.1)
-    rack (2.0.1)
+    rack (2.0.3)
     rack-protection (1.5.3)
       rack
     rack-test (0.6.3)
@@ -206,6 +206,7 @@ DEPENDENCIES
   pg (~> 0.18)
   pry (~> 0.10.4)
   puma (~> 3.0)
+  rack (~> 2.0, >= 2.0.2)
   rack-protection (~> 1.5, >= 1.5.3)
   rails (~> 5.0.2)
   redis-rails
