@@ -28,7 +28,7 @@
     end
   end
 
-  def createTour(dane)
+  def createTour()
     
     @dane = Sidekiq::Status::get(@job_id, :solution_array)
     @array_cities = ActiveSupport::JSON.decode(@dane)

@@ -5,16 +5,14 @@ class V1::RoutesController < ApplicationController
 		render json: @routes, status: :ok
 	end
 
-	
-	def update
-    respond_to do |format|
-      if @place.update(place_params)
-        format.html { redirect_to @place, notice: 'Place was successfully updated.' }
-        format.json { render :show, status: :ok, location: @place }
-      else
-        format.html { render :edit }
-        format.json { render json: @place.errors, status: :unprocessable_entity }
-      end
-    end
+	def update  
+    @route = Route.find(params[:id])
+    
+    @route.update(route_params)
+    head :no_content
+  end
+
+  def route_params
+      params.permit(:_json, :done, :id)
   end
 end

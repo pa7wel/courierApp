@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170523190510) do
+ActiveRecord::Schema.define(version: 20170601155236) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -20,6 +20,13 @@ ActiveRecord::Schema.define(version: 20170523190510) do
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
     t.index ["city"], name: "index_cities_on_city", using: :btree
+  end
+
+  create_table "locations", force: :cascade do |t|
+    t.float    "longitude"
+    t.float    "latitude"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "places", force: :cascade do |t|
@@ -32,8 +39,9 @@ ActiveRecord::Schema.define(version: 20170523190510) do
 
   create_table "routes", force: :cascade do |t|
     t.string   "city"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.boolean  "done",       default: false
   end
 
   create_table "users", force: :cascade do |t|
