@@ -1,6 +1,8 @@
 class V1::RoutesController < ApplicationController
+  before_filter :authenticate_user!
+  
 	def index
-		@routes = Route.all
+		@routes = Route.where(:user_id => current_user.id)
 		
 		render json: @routes, status: :ok
 	end

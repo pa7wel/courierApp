@@ -11,7 +11,12 @@ class V1::SessionsController < ApplicationController
 	end
 
 	def destroy
-		
+		current_user&.authentication_token = nil
+		if current_user.save
+			head :no_content
+		else
+			head(:unauthorized)
+		end
 	end
 
 end
