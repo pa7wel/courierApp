@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>home page</title>
-  </head>
-  <body>
+<div class="container">
     <button class="sentToSidekiq" onclick="sentToSidekiq()">GA</button>
     <%= link_to("zapisz", {:action => 'createTour'}, :class => 'btn btn-primary')%>
 
@@ -12,10 +7,11 @@
     </div>
     <div>
         <strong>Results</strong>
-    </div>
+    </div> 
     <div id="output"></div>
     </div>
     <div id="map"></div>
+</div>
     <script>
       var parseJSON = {
         cities: [],

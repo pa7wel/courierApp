@@ -1,9 +1,20 @@
 Rails.application.routes.draw do
 
+namespace :v1 do
+	resources :routes
+	resources :sessions, only: [:create, :destroy]
+	resources :locations
+end
+
+
+devise_for :users
+
 require 'sidekiq/web'
 mount Sidekiq::Web => "/sidekiq"
 
 get 'genetic_algorithm/index'
+
+root to: 'home#index'
 
 resources :places
 get 'home/index'

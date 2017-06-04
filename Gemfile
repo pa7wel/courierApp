@@ -33,6 +33,8 @@ gem 'rack', '~> 2.0', '>= 2.0.2'
 # gem 'bcrypt', '~> 3.1.7'
 gem 'georuby'
 
+gem 'simple_token_authentication', '~> 1.0' # see semver.org
+
 gem 'parse', '~> 0.1.0'
 
 gem 'pry', '~> 0.10.4'
@@ -47,6 +49,14 @@ gem 'sidekiq-status', '~> 0.6.0'
 gem 'redis-rails'
 
 gem 'json', '~> 2.1'
+
+gem 'devise'
+
+#gem 'bootstrap', '~> 4.0.0.alpha6'
+
+gem 'bootstrap3-rails', '~> 3.2'
+
+gem 'rack', '~> 2.0', '>= 2.0.2'
 
 #gem 'sinatra', github: 'sinatra/sinatra'
 

@@ -18,7 +18,8 @@
       @solution_array = Sidekiq::Status::get(job_id, :solution_array)
       @array_cities = ActiveSupport::JSON.decode(@solution_array)
       @array_cities.each do |i|
-        Route.create(city: i)
+        
+        Route.create(city: i, user_id: current_user.id)
       end
 
     elsif Sidekiq::Status::failed? job_id
@@ -28,8 +29,8 @@
     end
   end
 
-  def createTour(dane)
-    pry.binding
+  def createTour()
+    
     @dane = Sidekiq::Status::get(@job_id, :solution_array)
     @array_cities = ActiveSupport::JSON.decode(@dane)
     @array_cities.each do |i|
