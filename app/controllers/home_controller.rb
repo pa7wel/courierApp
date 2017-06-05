@@ -1,5 +1,5 @@
  class HomeController < ApplicationController
-
+  before_action :authenticate_user!
  	def index
   		
 	end
@@ -7,7 +7,6 @@
   def create
     @job_id = HardWorker.perform_async(my_params.to_json)
     render :status => :accepted, :json => { jobId: @job_id }
-
   end
   
   def fetch

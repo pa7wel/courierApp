@@ -1,4 +1,8 @@
-<div class="container">
+
+<% if current_user.admin == true %>
+
+  <div class="container">
+
     <button class="sentToSidekiq" onclick="sentToSidekiq()">GA</button>
     <%= link_to("zapisz", {:action => 'createTour'}, :class => 'btn btn-primary')%>
 
@@ -11,7 +15,12 @@
     <div id="output"></div>
     </div>
     <div id="map"></div>
-</div>
+  </div>
+<% else %>
+  <div><h2>Zaloguj sie jako admin !</h2></div>
+<% end %>
+
+
     <script>
       var parseJSON = {
         cities: [],
@@ -148,4 +157,4 @@
     </script>
   </body>
 </html>
-Contact GitHub API Training Shop Blog About
+
