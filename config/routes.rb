@@ -2,7 +2,6 @@ Rails.application.routes.draw do
 
   get 'courier/index'
 
-  mount RailsAdmin::Engine => '/home', as: 'rails_admin'
 namespace :v1 do
 	resources :routes
 	resources :sessions, only: [:create, :destroy]
@@ -28,5 +27,4 @@ post "home/create"
 
 match ':controller(/:action(/:id))', :via => [:get, :post]
 
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

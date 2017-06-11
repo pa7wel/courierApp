@@ -10,23 +10,21 @@ class HardWorker
       city = City.new(i);
       TourManager.add_city(city);
     end
-    # Initialize population
-    population = Population.new(100, true)
-    #puts "Initial distance: #{population.fittest.distance}"  # wyswietlenie najkrotszej trasy na podst. fitness 
+
+    population = Population.new(500, true)
+
     @initial_dist = population.fittest.distance
     puts "Initial distance: #{@initial_dist}"
-    # Evolve population
+
     population = GA.evolve_population( population )
     population = GA.evolve_population( population )
-    100.times do
+    500.times do
       population = GA.evolve_population( population )
-      puts "Final distance: #{population.fittest.distance}"
     end
 
     @final_dist = population.fittest.distance;
     puts "Final distance: #{@final_dist}"
     @solution = population.fittest.to_s
-    puts "Final distance: #{@solution}"
     @solution_array = population.fittest.to_table
     puts "Array solution: #{@solution_array}"
 
@@ -39,14 +37,10 @@ class HardWorker
     store solution: @solution
     solution = retrieve :solution
 
-    
     store solution_array: @solution_array.to_json
     solution_array = retrieve :solution_array
 
-
   end
-
-# CLASSES ---------------------------------------------------------n
 
 class City
   attr_accessor :name
@@ -58,9 +52,6 @@ class City
   def distance_to( city )
     @miasta = $data['distances'].values
     @distance = @miasta.find {|x| x['origin'] == name  and x['destination'] == city.name}['distance']
-    #@distance
-    #@distance = rand(500)
-    #puts "miasto: #{city.name} do #{name} | dystans : #{@distance}"
     @distance.to_i   
   end
 
@@ -104,7 +95,6 @@ class Tour
 
   def generate_individual
     set_tour
-    # Loop through all our destination cities and add them to our tour
     TourManager.each_city do |city|
       tour << city
     end
@@ -124,7 +114,6 @@ class Tour
 
   def set_city( tour_position, city )
     tour[tour_position] = city
-    # reset cached fitness and distance
     @fitness = @distance = 0
   end
 
@@ -214,7 +203,7 @@ class Population
   end
 
   def fittest
-    tours.max_by{ |t| t.fitness }   # wybiermayta trase gdzie funkcja fitness jest najwyzsza tzn. ta trasa jest najkrotsza
+    tours.max_by{ |t| t.fitness }
   end
 
   def save_tour( index, tour )
@@ -233,11 +222,11 @@ class Population
     @size = population_size     # wielkosc populacji tj. 100
     reset_tours
 
-    if should_initialize             # true - inicjalizujemy wielkosc populacji tj. 100 a kazda zawiera trase tj. ABCD miasta potasowane
+    if should_initialize 
       population_size.times do
-        new_tour = Tour.new           # utworzenie nowej trasy
-        new_tour.generate_individual   # dodanie wszystkich miast i przetasowanie
-        tours << new_tour                 # dodanie do TRAS -> obiektu jednej trasy
+        new_tour = Tour.new  
+        new_tour.generate_individual
+        tours << new_tour
       end
     end
 
@@ -257,7 +246,7 @@ class GA
     0.015
   end
 
-  def self.tournament_size  
+  def self.tournament_size  # elite
     5
   end
 
@@ -268,29 +257,20 @@ class GA
   def self.evolve_population( population )
     new_population = Population.new( population.size, false )
 
-    # if elitism is enabled we keep the best individual 
-    # operator SELEKCJI elitism
     elitism_offset = 0
     if elitism
-      #puts "Saving fittest: #{population.fittest.distance}"
-      new_population.save_tour(0, population.fittest) # tworzymy nowa populacja z najlepszym wynikiem trasy
-      #puts "populacja nowa: #{new_population.fittest}"
+      new_population.save_tour(0, population.fittest) 
       elitism_offset = 1
     end
 
-    # Crossover population operator KRZYZOWANIA
-    # Loop over the new population's size
     (elitism_offset...population.size).each do |i|
-      # Select parents
-      parent1 = tournament_selection( population )  # rodzic 1 = z 5 losowyvh tras populacji wybioramy najkrotsza
-      parent2 = tournament_selection( population )  # rodzic 2 = ...
+      parent1 = tournament_selection( population )
+      parent2 = tournament_selection( population )  
 
-      # Crossover parents -> krzyzowanie crossover -> dzieci rodzicow
       child = crossover( parent1, parent2 )
       new_population.save_tour(i, child)
     end
 
-    # Mutate the new population a bit to add some new genetic material
     new_population.each(elitism_offset) do |tour|
       mutate(tour)
     end
@@ -298,24 +278,19 @@ class GA
     new_population
   end
 
-  # Applies crossover of random genes and creates offspring
   def self.crossover( parent1, parent2)
-    child = Tour.new  # definiowanie dziecka jako nowa trasa
+    child = Tour.new
 
-    # Get random start and end sub tour positions for parent1's tour
-    start_pos = Integer(rand * parent1.size)  # size = 30
+    start_pos = Integer(rand * parent1.size)
     end_pos = Integer(rand * parent2.size)
 
     parent1_genes = []
     parent2_genes = []
-    # Loop and add the sub tour from parent1 to our child
     (0...child.size).each do |i|
-      # if our start position is less than the end position
       if start_pos < end_pos && i > start_pos && i < end_pos
         parent1_genes << i
-        # puts "genes: #{parent1_genes}"
         child.set_city( i, parent1.get_city(i) )
-      elsif start_pos > end_pos # if it is larger
+      elsif start_pos > end_pos
         if !(i < start_pos && i > end_pos)
           parent1_genes << i
           child.set_city(i, parent1.get_city(i) )
@@ -323,7 +298,6 @@ class GA
       end
     end
 
-    # Loop through parent2's city tour
     parent2.each_with_index do |city, index|
       if !child.contains_city?( city )
         parent2_genes << child.set_at_first_available( city )
@@ -331,13 +305,10 @@ class GA
     end
 
     child
-    #puts "dziecko #{child}"
   end
 
-  # Mutate a tour using swap mutation
   def self.mutate( tour )
     (0...tour.size).each do | tourPos1 |
-      # Apply mutation rate
       if rand < mutation_rate
         tourPos2 = Integer( rand * tour.size)
 
@@ -351,16 +322,11 @@ class GA
   end
 
   def self.tournament_selection( population )
-    # Create a tournament population
     tournament = Population.new( tournament_size, false)
-
-    # For each place in the tournament get a random candidate tour and and it
-    # losujemy z populacji 5 tras i zapisujemy do tablicy tournament
     (0...tournament_size).each do |index|
       random_index = Integer(rand * population.size)
       tournament.save_tour(index, population.get_tour( random_index ) )
     end
-    # zwracamy najlepszy wynik z fitness
     tournament.fittest
   end
 end
