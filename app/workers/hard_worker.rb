@@ -18,7 +18,7 @@ class HardWorker
 
     population = GA.evolve_population( population )
     population = GA.evolve_population( population )
-    500.times do
+    100.times do
       population = GA.evolve_population( population )
     end
 
@@ -27,6 +27,7 @@ class HardWorker
     @solution = population.fittest.to_s
     @solution_array = population.fittest.to_table
     puts "Array solution: #{@solution_array}"
+    puts "Final distance: #{@final_dist}"
 
     store initial_dist: @initial_dist
     initial_dist = retrieve :initial_dist
@@ -119,9 +120,9 @@ class Tour
 
   def fitness
     if @fitness == 0
-      @fitness = 1.0/distance
+      @fitness = 1 - (10000.0/distance)
     end
-    @fitness
+    puts "Funkcja fitness: #{@fitness}"
   end
 
   def distance
@@ -243,10 +244,10 @@ end
 
 class GA
   def self.mutation_rate
-    0.015
+    0.3
   end
 
-  def self.tournament_size  # elite
+  def self.tournament_size
     5
   end
 

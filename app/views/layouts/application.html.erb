@@ -3,19 +3,16 @@
   <head>
     <title>CourierApp</title>
     <%= csrf_meta_tags %>
-
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
     <%= csrf_meta_tags %>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
-
 <body>
 
 <div class="container">
   <nav class="navbar navbar-default">
   <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
         <span class="sr-only">Toggle navigation</span>
@@ -26,7 +23,6 @@
        <%= link_to("Courier-App", root_path, class: "navbar-brand") %>
     </div>
    
-    <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav navbar-right">
         <% if user_signed_in? %>
@@ -36,8 +32,8 @@
           <li><%= link_to("Sign in", new_user_session_path) %></li>
         <% end %>
       </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
+    </div>
+  </div>
   </nav>
 
 <div class="alert">
@@ -61,11 +57,10 @@
 <%= yield %>
 
 </div>
-<!-- stopka -->
   <div id="footer">
     <div class="container space_top">
       <p class="text-muted">
-        Workshop registration &copy; <a href="https://www.pgs-soft.com/pl/" target="_blank">www.pgs-soft.com</a>
+        Courier App &copy;
       </p>
     </div>
   </div>

@@ -3,9 +3,32 @@
 
   <div class="container">
 
-    <button class="sentToSidekiq" onclick="sentToSidekiq()">GA</button>
+  <form id="courierForm" action="#">
+  <label for="userName">Address 1:</label>
+  <input id="address" name="city[0]" type="text" class="inputField">
+  <label for="userName">Address 2:</label>
+  <input id="address" name="city[1]" type="text" class="inputField">
+  <label for="userName">Address 3:</label>
+  <input id="address" name="city[2]" type="text" class="inputField">
+  <label for="userName">Address 4:</label>
+  <input id="address" name="userName" type="text" class="inputField">
+  <label for="userName">Address 5:</label>
+  <input id="address" name="userName" type="text" class="inputField">
+  <label for="userName">Address 6:</label>
+  <input id="address" name="userName" type="text" class="inputField">
+  <label for="userName">Address 7:</label>
+  <input id="address" name="userName" type="text" class="inputField">
+  <label for="userName">Address 8:</label>
+  <input id="address" name="userName" type="text" class="inputField">
+  <label for="userName">Address 9:</label>
+  <input id="address" name="userName" type="text" class="inputField">
+  <label for="userName">Address 10:</label>
+  <input id="address" name="userName" type="text" class="inputField">
+  <button type="submit" class="btn btn-info confirmForms">Confirm forms</button>
+</form>
+    <button class="btn btn-warning" onclick="getDistanceMatrix()">Get google Distance Matrix</button>
+    <button class="btn btn-success" onclick="sentToSidekiq()">GA</button>
     <%= link_to("zapisz", {:action => 'createTour'}, :class => 'btn btn-primary')%>
-
     <div id="right-panel">
       <div id="inputs">
     </div>
@@ -20,14 +43,24 @@
   <div><h2>Zaloguj sie jako admin !</h2></div>
 <% end %>
 
-
     <script>
       var parseJSON = {
         cities: [],
         distances: []
       }
+
+      $( "form" ).submit(function( event ) {
+        var $inputs = $('#courierForm :input');
+        var values = [];
+        $inputs.each(function() {
+          parseJSON.cities.push($(this).val());
+        });
+        parseJSON.cities.pop();
+        console.log( parseJSON.cities );
+        event.preventDefault();
+      });
             
-      function initMap() {
+      function getDistanceMatrix() {
 
         var bounds = new google.maps.LatLngBounds;
         var markersArray = [];
@@ -43,7 +76,7 @@
         var geocoder = new google.maps.Geocoder;
         var service = new google.maps.DistanceMatrixService;
         service.getDistanceMatrix({
-          origins: originTable,
+          origins: originTable,  // zamienic na parseJSON.cities !!!!! 
           destinations: originTable,
           travelMode: 'DRIVING',
           unitSystem: google.maps.UnitSystem.METRIC,
@@ -153,7 +186,7 @@
       }
     </script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDviu0iFDidvkkcZ4fLZysw6W8tDuA-Hsg&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDviu0iFDidvkkcZ4fLZysw6W8tDuA-Hsg">
     </script>
   </body>
 </html>
