@@ -24,8 +24,15 @@
   <input id="address" name="userName" type="text" class="inputField">
   <label for="userName">Address 10:</label>
   <input id="address" name="userName" type="text" class="inputField">
-  <button type="submit" class="btn btn-info confirmForms">Confirm forms</button>
+  <button type="button" class="btn btn-info confirmForms">Confirm forms</button>
 </form>
+
+<%= form_for home_createTour_path do %>
+  <label for="user_id">User id:</label>
+  <%= text_field_tag :user_id %>
+ <%= submit_tag "Submit" %>
+<% end %>
+
     <button class="btn btn-warning" onclick="getDistanceMatrix()">Get google Distance Matrix</button>
     <button class="btn btn-success" onclick="sentToSidekiq()">GA</button>
     <%= link_to("zapisz", {:action => 'createTour'}, :class => 'btn btn-primary')%>

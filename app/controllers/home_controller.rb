@@ -15,11 +15,10 @@
     if Sidekiq::Status::complete? job_id
       render :plain => Sidekiq::Status::get(job_id, :solution), :status => 200
       @solution_array = Sidekiq::Status::get(job_id, :solution_array)
-      @array_cities = ActiveSupport::JSON.decode(@solution_array)
-      @array_cities.each do |i|
-        
-        Route.create(city: i, user_id: current_user.id)
-      end
+      $array_cities = ActiveSupport::JSON.decode(@solution_array)
+      #@array_cities.each do |i| 
+      #  Route.create(city: i, user_id: current_user.id)
+      #end
 
     elsif Sidekiq::Status::failed? job_id
       render :plain => 'Failed', :status => 500
@@ -27,15 +26,16 @@
       render :plain => '', :status => 202
     end
   end
+# nie uzywame createTour !!!!
+  def createTour
+    userId = params[:user_id]
 
-  def createTour()
-    
-    @dane = Sidekiq::Status::get(@job_id, :solution_array)
-    @array_cities = ActiveSupport::JSON.decode(@dane)
-    @array_cities.each do |i|
-      @zapisz = Route.new(place_params)
-      @zapisz.save
+    $array_cities.each do |i|
+        Route.create(city: i, userId: user_id)
     end
+    flash[:notice] = "Route was saved successfully!!!"
+    #redirect_to(:action=>'index', :kategoria_id => @kategorie.id)
+    render :plain => 'Saved', :status => 200
 
   end
   
@@ -49,6 +49,10 @@
     end
 
     def place_params
-      params.permit(:city)
+      params.permit(:city, :user_id)
+    end
+
+    def params_user_id
+      params.permit(:user_id)
     end
 end

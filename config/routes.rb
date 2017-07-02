@@ -1,5 +1,11 @@
 Rails.application.routes.draw do
 
+  get 'gpsposition/index'
+
+  get 'courier_location/index'
+
+  get 'monitor/index'
+
   get 'courier/index'
 
 namespace :v1 do
@@ -20,6 +26,7 @@ root to: 'home#index'
 
 resources :places
 get 'home/index'
+get 'home/createTour'
 
 get "home/new"
 get "homefetch/:job_id", controller: :home, action: :fetch

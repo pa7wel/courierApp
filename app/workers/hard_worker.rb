@@ -120,10 +120,11 @@ class Tour
 
   def fitness
     if @fitness == 0
-      @fitness = 1 - (10000.0/distance)
+      @fitness = 1.0/distance
     end
-    puts "Funkcja fitness: #{@fitness}"
+    @fitness
   end
+
 
   def distance
     if @distance == 0

@@ -1,0 +1,24 @@
+<h3>Monitoring</h3>
+
+<p>select courier:</p>
+
+<table class="table table-striped">
+		<tr class="info">
+			<th>id</th>
+			<th>email</th>
+			<th>admin</th>
+			<th>actions</th>
+		</tr>
+	<% @users.each do |i| %>
+		<tr>
+			<td><%= i.id %></td>
+			<td><%= i.email %></td>
+			<td><%= i.admin %></td>
+			<td class="actions">
+				<%= link_to("monitoring", :class => 'btn btn-xs btn btn-success')%>
+				<%= link_to("set-route", :class => 'btn btn-xs btn btn-success')%>
+			</td>
+		</tr>
+	<%end%>	
+
+	</table>
