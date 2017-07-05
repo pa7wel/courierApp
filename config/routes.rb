@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
 
-  get 'gpsposition/index'
+  get 'set/index'
+
+  get 'set/new/createTour'
+
+  get 'management/index'
 
   get 'courier_location/index'
 
@@ -13,7 +17,6 @@ namespace :v1 do
 	resources :sessions, only: [:create, :destroy]
 	resources :locations
 end
-
 
 devise_for :users
 

@@ -1,0 +1,194 @@
+
+<% if current_user.admin == true %>
+
+  <div class="container">
+
+  <form id="courierForm" action="#">
+  <label for="userName">Address 1:</label>
+  <input id="address" name="city[0]" type="text" class="inputField">
+  <label for="userName">Address 2:</label>
+  <input id="address" name="city[1]" type="text" class="inputField">
+  <label for="userName">Address 3:</label>
+  <input id="address" name="city[2]" type="text" class="inputField">
+  <label for="userName">Address 4:</label>
+  <input id="address" name="userName" type="text" class="inputField">
+  <label for="userName">Address 5:</label>
+  <input id="address" name="userName" type="text" class="inputField">
+  <label for="userName">Address 6:</label>
+  <input id="address" name="userName" type="text" class="inputField">
+  <label for="userName">Address 7:</label>
+  <input id="address" name="userName" type="text" class="inputField">
+  <label for="userName">Address 8:</label>
+  <input id="address" name="userName" type="text" class="inputField">
+  <label for="userName">Address 9:</label>
+  <input id="address" name="userName" type="text" class="inputField">
+  <label for="userName">Address 10:</label>
+  <input id="address" name="userName" type="text" class="inputField">
+  <button type="button" class="btn btn-info confirmForms">Confirm forms</button>
+</form>
+
+    <button class="btn btn-warning" onclick="getDistanceMatrix()">Get google Distance Matrix</button>
+    <button class="btn btn-success" onclick="sentToSidekiq()">GA</button>
+    <%= link_to("zapisz", {:action => 'createTour', :id => params[:id]}, :class => 'btn btn-primary')%>
+    <div id="right-panel">
+      <div id="inputs">
+    </div>
+    <div>
+        <strong>Results</strong>
+    </div> 
+    <div id="output"></div>
+    </div>
+    <div id="map"></div>
+  </div>
+<% else %>
+  <div><h2>Zaloguj sie jako admin !</h2></div>
+<% end %>
+
+    <script>
+      var parseJSON = {
+        cities: [],
+        distances: []
+      }
+
+      $( "form" ).submit(function( event ) {
+        var $inputs = $('#courierForm :input');
+        var values = [];
+        $inputs.each(function() {
+          parseJSON.cities.push($(this).val());
+        });
+        parseJSON.cities.pop();
+        console.log( parseJSON.cities );
+        event.preventDefault();
+      });
+            
+      function getDistanceMatrix() {
+
+        var bounds = new google.maps.LatLngBounds;
+        var markersArray = [];
+        var originTable = ['Rudna Mała 307','Rzeszów, Kosynierów 25','Rzeszów, Rymanowska 9','Rzeszow, Maczka 6','Rzeszów, Jana Pawła 2 190','Rzeszów, Sosnowa 5','Rzeszów, Rolnicza 1','Rzeszów, Świętego Rocha 9','Rzeszów, Słowackiego 7','Rzeszów, Szafirowa 13'];
+        var destinationIcon = 'https://chart.googleapis.com/chart?' +
+            'chst=d_map_pin_letter&chld=D|FF0000|000000';
+        var originIcon = 'https://chart.googleapis.com/chart?' +
+            'chst=d_map_pin_letter&chld=O|FFFF00|000000';
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 55.53, lng: 9.4},
+          zoom: 10
+        });
+        var geocoder = new google.maps.Geocoder;
+        var service = new google.maps.DistanceMatrixService;
+        service.getDistanceMatrix({
+          origins: originTable,  // zamienic na parseJSON.cities !!!!! 
+          destinations: originTable,
+          travelMode: 'DRIVING',
+          unitSystem: google.maps.UnitSystem.METRIC,
+          avoidHighways: false,
+          avoidTolls: false
+        }, function(response, status) {
+          if (status !== 'OK') {
+            alert('Error was: ' + status);
+          } else {
+            var originList = response.originAddresses;
+            console.log('originList', originList);
+            console.log('response: ', response);
+            var destinationList = response.destinationAddresses;
+            var outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = '';
+            deleteMarkers(markersArray);
+            // parsowanie JSON do wysylki do sidekiq
+            console.log(response);
+            parseJSON.cities = originList;
+            var count = 0;
+            for (var i = 0; i < response.destinationAddresses.length; i++) {
+              var results = response.rows[i].elements;
+              for (var j = 0; j < response.originAddresses.length; j++) {
+                console.log(count);
+                  parseJSON.distances[count] = {
+                    origin: response.destinationAddresses[i],
+                    destination: response.originAddresses[j],
+                    distance: results[j].distance.value
+                  }
+                  console.log(parseJSON.distances[count].origin);
+                  console.log(parseJSON.distances[count].destination);
+                count++;
+              }
+              
+            }
+            console.log('wynikowy json', parseJSON);
+            var showGeocodedAddressOnMap = function(asDestination) {
+              var icon = asDestination ? destinationIcon : originIcon;
+              return function(results, status) {
+                if (status === 'OK') {
+                  map.fitBounds(bounds.extend(results[0].geometry.location));
+                  markersArray.push(new google.maps.Marker({
+                    map: map,
+                    position: results[0].geometry.location,
+                    icon: icon
+                  }));
+                } else {
+                  //alert('Geocode was not successful due to: ' + status);
+                }
+              };
+            };
+            for (var i = 0; i < originList.length; i++) {
+              var results = response.rows[i].elements;
+              geocoder.geocode({'address': originList[i]},
+                  showGeocodedAddressOnMap(false));
+              for (var j = 0; j < results.length; j++) {
+                geocoder.geocode({'address': destinationList[j]},
+                    showGeocodedAddressOnMap(true));
+                outputDiv.innerHTML += originList[i] + ' to ' + destinationList[j] +
+                    ': ' + results[j].distance.text + ' in ' +
+                    results[j].duration.text + '<br>';
+              }
+            }
+          }
+        });
+      }
+      function deleteMarkers(markersArray) {
+        for (var i = 0; i < markersArray.length; i++) {
+          markersArray[i].setMap(null);
+        }
+        markersArray = [];
+      }
+  function sentToSidekiq() {
+        
+    console.log('json to sent to sidekiq:', parseJSON);
+    function output(msg) { console.log(msg) }
+    function jobFinished(jobResult) {
+      console.log(jobResult);
+    }
+    function pollJob(jobId, successCallback) {
+      function poll() {
+        var pollEvery = 3000; // milliseconds
+        $.ajax({
+          type: "GET",
+          url: "/home/fetch/" + jobId, // coupled to your app's routes
+          dataType: 'text',
+          statusCode: {
+            200: function(data) { successCallback(data); },
+            202: function(data) { setTimeout(poll, pollEvery); },
+            500: function(data) { output('Error!'); }
+          }
+        });
+      };
+      poll();
+    }
+    output('Creating...');
+    $.ajax({
+      type: "POST",
+      url: "/home/create",
+      data: parseJSON,
+      dataType: 'json',
+      success: function(data) {
+        output('Job queued, waiting...');
+        pollJob(data.jobId, jobFinished);
+      }
+    });
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDviu0iFDidvkkcZ4fLZysw6W8tDuA-Hsg">
+    </script>
+  </body>
+</html>
+

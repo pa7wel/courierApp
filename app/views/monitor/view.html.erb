@@ -1,0 +1,33 @@
+<h3>Monitorin users: <%= @user_to_monit.email %></h3>
+
+<table class="table table-striped">
+		<tr class="info">
+			<th>id</th>
+			<th>lattitude</th>
+			<th>longitude</th>
+		</tr>
+	<% @position_gps.each do |i| %>
+		<tr>
+			<td><%= i.id %></td>
+			<td><%= i.longitude %></td>
+			<td><%= i.latitude %></td>
+		</tr>
+	<%end%>	
+</table>
+
+<h4>Trasa: </h4>
+
+<table class="table table-striped">
+		<tr class="info">
+			<th>id</th>
+			<th>city</th>
+			<th>done</th>
+		</tr>
+	<% @users_current_route .each do |i| %>
+		<tr>
+			<td><%= i.id %></td>
+			<td><%= i.city %></td>
+			<td><%= i.done %></td>
+		</tr>
+	<%end%>	
+</table>

@@ -1,0 +1,2 @@
+class Way < ApplicationRecord
+end
