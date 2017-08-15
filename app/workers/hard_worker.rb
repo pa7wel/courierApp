@@ -221,7 +221,7 @@ class Population
 
   private
   def initialize_population( population_size, should_initialize = false)
-    @size = population_size     # wielkosc populacji tj. 100
+    @size = population_size
     reset_tours
 
     if should_initialize 
